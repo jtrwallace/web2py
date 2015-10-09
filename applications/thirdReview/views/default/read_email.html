@@ -1,0 +1,24 @@
+{{extend 'layout.html'}}
+
+        <a href="{{=URL("index")}}"><i class="fa fa-arrow-circle-left fa-3x"></i></a>
+        {{if len (email):}}
+            <br><br>
+            {{if (email['read']):}}
+                <i class="fa fa-check-circle-o fa-2x"></i>
+            {{else:}}
+                <i class="fa fa-circle-o fa-2x"></i>
+            {{pass}}
+
+            {{if (email['starred']):}}
+                <i class="fa fa-star fa-2x"></i>
+            {{else:}}
+                <i class="fa fa-star-o fa-2x"></i>
+            {{pass}}
+            <br>
+
+            <br><strong>From:</strong> {{=email['from']}}
+
+            <br><strong>Subject:</strong> {{=email['subject']}}
+            <br><strong>Date:</strong> {{=email['date']}}
+            <p class = "message_wrapper"><strong>Message:</strong><br><br> {{=email['text']}}</p>
+        {{pass}}

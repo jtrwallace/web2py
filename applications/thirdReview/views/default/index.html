@@ -1,0 +1,44 @@
+{{extend 'layout.html'}}
+
+
+{{if len(email_list):}}
+    <table style="width:100%" class="email_table">
+        <tr class="email_head">
+            <td><i class="fa fa-check"></i></td>
+            <td><i class="fa fa-star"></i></td>
+            <td>from:</td>
+            <td>subject:</td>
+            <td>date:</td>
+        </tr>
+
+    {{for email in email_list:}}
+        <tr style="width:100%" class="email_row">
+            <td>
+                {{if (email['read']):}}
+                    <i class="fa fa-check-circle-o"></i>
+                {{else:}}
+                    <i class="fa fa-circle-o"></i>
+                {{pass}}
+            </td>
+            <td>
+                {{if (email['starred']):}}
+                    <i class="fa fa-star"></i>
+                {{else:}}
+                    <i class="fa fa-star-o"></i>
+                {{pass}}
+            </td>
+            <td>{{=email['from']}}</td>
+            <td><a href="{{=URL("read_email",args=email['id'])}}" target="_blank">{{=email['subject']}} </a></td>
+            <td>{{=email['date']}}</td>
+        </tr>
+
+
+
+
+
+
+    {{pass}}
+
+    </table>
+
+{{pass}}

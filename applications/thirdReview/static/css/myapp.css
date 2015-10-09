@@ -1,0 +1,41 @@
+/* line 1, ../sass/_main.scss */
+.colorful {
+  color: #bb8833;
+}
+
+/* line 15, ../sass/myapp.scss */
+.email_table {
+  width: 100%;
+}
+
+/* line 20, ../sass/myapp.scss */
+.email_head {
+  background: snow;
+  height: 20px;
+  font-size: 20px;
+}
+
+/* line 26, ../sass/myapp.scss */
+.email_row {
+  width: 100%;
+}
+
+/* line 31, ../sass/myapp.scss */
+.email_row:nth-child(even) {
+  background: gainsboro;
+}
+
+/* line 36, ../sass/myapp.scss */
+.email_row:nth-child(odd) {
+  background: ghostwhite;
+}
+
+/* line 42, ../sass/myapp.scss */
+.email_col {
+  display: inline-block;
+}
+
+/* line 46, ../sass/myapp.scss */
+.message_wrapper {
+  white-space: pre-wrap;
+}

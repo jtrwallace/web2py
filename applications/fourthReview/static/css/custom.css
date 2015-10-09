@@ -1,0 +1,21 @@
+.goldstar {
+    color: #ffd700;
+}
+
+.greystar {
+    color: #d3d3d3;
+}
+
+.subject-bold {
+    font-weight: bold;
+}
+
+.black-text{
+    white-space: pre-line;
+    opacity: .87;
+}
+
+.chip {
+    margin-bottom: 15px;
+}
+
