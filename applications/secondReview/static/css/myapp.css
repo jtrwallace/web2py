@@ -1,0 +1,60 @@
+/* line 1, ../sass/_main.scss */
+h1, h2 {
+  color: #e4e4e4;
+}
+
+/* line 5, ../sass/_main.scss */
+h4 {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* line 10, ../sass/_main.scss */
+div.main {
+  line-height: 100%;
+  box-sizing: border-box;
+  width: inherit;
+  white-space: nowrap;
+}
+
+/* line 17, ../sass/_main.scss */
+div.readmail {
+  background-image: url("../images/AmWThvw.jpg");
+  padding-bottom: 300px;
+}
+/* line 21, ../sass/_main.scss */
+div.readmail .emailtext {
+  background-color: rgba(152, 150, 156, 0.7);
+  padding: 10px;
+}
+/* line 26, ../sass/_main.scss */
+div.readmail .boldtext {
+  font-weight: bold;
+}
+
+/* line 31, ../sass/_main.scss */
+div.mylist {
+  background-color: rgba(152, 150, 156, 0.6);
+  padding: 8px;
+  margin: 8px;
+  color: #e4e4e4;
+  position: relative;
+  width: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* line 43, ../sass/_main.scss */
+div.mylist .mysub {
+  font-weight: bold;
+  overflow: hidden;
+}
+
+/* line 48, ../sass/_main.scss */
+a {
+  color: #ff0000;
+}
+
+/* line 52, ../sass/_main.scss */
+.mylist a:hover {
+  color: #ffaaaa;
+}

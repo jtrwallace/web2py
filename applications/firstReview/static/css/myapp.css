@@ -1,0 +1,17 @@
+/* line 1, ../sass/_main.scss */
+.colorful {
+  color: #bb8833;
+}
+
+/* line 5, ../sass/_main.scss */
+div.theemails {
+  color: black;
+  line-height: 100%;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* line 11, ../sass/_main.scss */
+div.emailheader {
+  color: black;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}

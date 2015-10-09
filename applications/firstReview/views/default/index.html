@@ -1,0 +1,103 @@
+
+<html>
+<head>
+    <link rel="stylesheet" href="{{=URL('static', 'font-awesome-4.4.0/css/font-awesome.min.css')}}"/>
+
+<style>
+#header {
+    background-color:black;
+    color:white;
+    text-align:center;
+    padding:5px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+</style>
+</head>
+<body>
+<div id ="header">
+<h1>Welcome to your inbox!</h1>
+</div>
+</body>
+</html>
+
+
+
+<style>
+table, th, td {
+    table-layout:fixed;
+    border-top: 1px solid black;
+    border-collapse: collapse;
+    background: #fff;
+}
+th, td {
+    padding: 3px 5px;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    white-space:nowrap;
+}
+
+th:nth-child(even) {background: #CCC} <!-- http://www.w3.org/Style/Examples/007/evenodd.en.html -->
+th:nth-child(odd) {background: #FFF}
+td:nth-child(even) {background: #CCC} <!-- http://www.w3.org/Style/Examples/007/evenodd.en.html -->
+td:nth-child(odd) {background: #FFF}
+
+
+
+#emailheader {
+    background-color: black;
+    color: black;
+    text-align: center;
+    padding: 3px;
+}
+
+</style>
+<div id="emailheader">
+<table width="100%">
+    <tr>
+        <th width="7%">Read:</th>
+        <th width="25%">From:</th>
+        <th>Date:</th>
+        <th>Subject:</th>
+    </tr>
+</table>
+</div>
+{{for email in email_list:}}
+        <div class="theemails">
+            <table style="width:100%">
+                <tr>
+                    <td width="7%">
+                        {{if email['starred']:}}
+                            <i class="fa fa-star" style="color:yellow"></i>
+                            {{else:}}
+                                <i class="fa fa-star" style="color:grey"></i>
+                        {{pass}}
+                    </td>
+
+                    <td width="25%">
+                        {{if email['starred']:}}
+                       <b><span class = "emailfrom"> {{=email['from']}}</span></b>
+                        {{else:}}
+                        <span class = "emailfrom"> {{=email['from']}}</span>
+                        {{pass}}
+                    </td>
+                    <td>
+                        {{if email['starred']:}}
+                       <b><span class = "emaildate">  {{=email['date']}}</span></b>
+                        {{else:}}
+                        <span class = "emaildate">  {{=email['date']}}</span>
+                        {{pass}}
+                    </td>
+                    <td>
+                        {{if email['starred']:}}
+                       <b><a href=read_email/{{=email['id']}}><span class = "emailsubject"> {{=email['subject']}}</span></a></b>
+                        {{else:}}
+                        <a href=read_email/{{=email['id']}}><span class = "emailsubject"> {{=email['subject']}}</span></a>
+                        {{pass}}
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+{{pass}}
+
