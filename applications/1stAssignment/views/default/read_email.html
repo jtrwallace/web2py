@@ -1,0 +1,26 @@
+{{extend 'layout.html'}}
+
+<div class="singleemail">
+    <div class="singlefromreadstar">
+        <span class="singlefrom">From: {{=email['from']}}</span>
+        <div class="singleread">
+            {{if email['read']:}}
+            <i class="fa fa-circle-thin"></i>
+            {{else:}}
+            <i class="fa fa-circle"></i>
+            {{pass}}
+        </div>
+        <div class="singlestar">
+            {{if email['starred']:}}
+            <i class="fa fa-star"></i>
+            {{else:}}
+            <i class="fa fa-star-o"></i>
+            {{pass}}
+        </div>
+    </div>
+    <span class="singledate">Received: {{=email['pretty_date']['pretty']}}</span>
+    <span class="singlesubject">Subject: {{=A(email['subject'], _href=URL('default', 'read_email', args=[email['id']]))}}</span>
+    <div class="singletext">
+        {{=email['text']}}
+    </div>
+</div>

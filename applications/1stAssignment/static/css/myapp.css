@@ -1,0 +1,300 @@
+/* line 1, ../sass/_main.scss */
+.colorful {
+  color: #bb8833;
+}
+
+/*Styles the title*/
+/* line 6, ../sass/_main.scss */
+.heading {
+  margin: auto;
+  text-align: center;
+  background-color: #7219A2;
+  color: white;
+  width: 80%;
+  padding-top: 1px;
+  padding-bottom: 5px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+/*Styles the entire list container that holds the individual emails.*/
+/* line 19, ../sass/_main.scss */
+.emaillist {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  margin: auto;
+  width: 80%;
+}
+
+/*Styles each email in the list*/
+/* line 29, ../sass/_main.scss */
+.email {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  margin: auto;
+  background-color: #EDEDED;
+  padding: 10px;
+  width: 100%;
+}
+
+/*Styles every other email in the list*/
+/* line 41, ../sass/_main.scss */
+.email:nth-child(even) {
+  background-color: #fff;
+}
+
+/*Styles the star container*/
+/* line 46, ../sass/_main.scss */
+.star {
+  font-size: 20pt;
+  margin: auto;
+  padding-left: 20px;
+  padding-right: 0px;
+  margin-right: -10px;
+  margin-left: 5px;
+  color: #7219A2;
+}
+
+/* line 56, ../sass/_main.scss */
+i.fa-star {
+  color: gold;
+}
+
+/* line 60, ../sass/_main.scss */
+i.fa-star-o {
+  color: grey;
+}
+
+/*Styles the container that holds the subject, from, and text*/
+/* line 65, ../sass/_main.scss */
+.content {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  margin: auto;
+  padding-right: -10px;
+  width: 75%;
+}
+
+/*Same thing but for when the email has already been read*/
+/* line 76, ../sass/_main.scss */
+.content-read {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  margin: auto;
+  padding-right: -10px;
+  width: 75%;
+  color: grey;
+}
+
+/* line 87, ../sass/_main.scss */
+.content-read a:link {
+  color: grey;
+  text-decoration: none;
+}
+
+/*Styles the container that holds subject and from only*/
+/* line 93, ../sass/_main.scss */
+.subjectandfrom {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+}
+
+/*Styles the subject*/
+/* line 101, ../sass/_main.scss */
+.subject {
+  margin-top: -15px;
+  margin-bottom: auto;
+}
+
+/* line 106, ../sass/_main.scss */
+h2 {
+  font-size: 14pt;
+}
+
+/*Styles the from*/
+/* line 112, ../sass/_main.scss */
+.from {
+  padding-left: 10px;
+  margin-top: auto;
+  margin-bottom: auto;
+  font-size: 9pt;
+}
+
+/*Styles the preview text*/
+/* line 120, ../sass/_main.scss */
+.text {
+  font-size: 10pt;
+}
+
+/*Styles the container that holds the month and day*/
+/* line 125, ../sass/_main.scss */
+.date {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  margin: auto;
+  color: #7219A2;
+}
+
+/*Styles the abbreviated month*/
+/* line 135, ../sass/_main.scss */
+.month {
+  margin: auto;
+  font-size: 16pt;
+}
+
+/*Styles the day number*/
+/* line 141, ../sass/_main.scss */
+.day {
+  margin: auto;
+  font-size: 18pt;
+}
+
+/*Styles all the links*/
+/* line 147, ../sass/_main.scss */
+a:link {
+  color: #7219A2;
+  text-decoration: none;
+}
+
+/* visited link */
+/* line 153, ../sass/_main.scss */
+a:visited {
+  color: #7219A2;
+  text-decoration: none;
+}
+
+/* mouse over link */
+/* line 159, ../sass/_main.scss */
+a:hover {
+  color: #000;
+  text-decoration: none;
+}
+
+/* selected link */
+/* line 165, ../sass/_main.scss */
+a:active {
+  color: #000;
+  text-decoration: none;
+}
+
+/* line 170, ../sass/_main.scss */
+.bottom {
+  margin: auto;
+  width: 80%;
+  text-align: center;
+  background-color: #7219A2;
+  color: white;
+  padding-top: 1px;
+  padding-bottom: 7px;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+/* line 182, ../sass/_main.scss */
+.footerspace {
+  height: 20px;
+}
+
+/* line 186, ../sass/_main.scss */
+.singleemail {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  margin: auto;
+  width: 50%;
+  border-radius: 15px;
+  background-color: white;
+  border-color: #7219A2;
+  border-width: 4px;
+  border-style: solid;
+  font-size: 17px;
+  margin-top: 50px;
+}
+
+/* line 202, ../sass/_main.scss */
+.singlefromreadstar {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #7219A2;
+  padding: 15px;
+}
+
+/* line 215, ../sass/_main.scss */
+.singlefrom {
+  margin-top: 6px;
+  font-size: 18px;
+  width: 75%;
+}
+
+/* line 221, ../sass/_main.scss */
+.singleread {
+  font-size: 30pt;
+  padding-left: 20px;
+  padding-right: 0px;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: -10px;
+  margin-bottom: -100px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  color: #7219A2;
+}
+
+/* line 234, ../sass/_main.scss */
+.singledate {
+  margin-top: 0px;
+  padding: 15px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #7219A2;
+}
+
+/* line 242, ../sass/_main.scss */
+.singlesubject {
+  margin-top: 0px;
+  padding: 15px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #7219A2;
+}
+
+/* line 250, ../sass/_main.scss */
+.singletext {
+  font-size: 16px;
+  white-space: pre-line;
+  padding: 15px;
+  margin-top: -10px;
+}
+
+/* line 257, ../sass/_main.scss */
+.singlestar {
+  font-size: 30pt;
+  padding-left: 10px;
+  padding-right: 0px;
+  margin-right: auto;
+  margin-top: -10px;
+  margin-bottom: -10px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  margin-left: auto;
+  color: #7219A2;
+}
