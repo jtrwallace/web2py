@@ -1,0 +1,40 @@
+{{extend 'layout.html'}}
+
+<div class="heading">
+    <h1>Inbox</h1>
+</div>
+
+<div class="emaillist">
+{{if len(email_list) > 0:}}
+    {{for email in email_list:}}
+        <div class="email">
+            <div class="star">
+                {{if email['starred']:}}
+                <i class="fa fa-star"></i>
+                {{else:}}
+                <i class="fa fa-star-o"></i>
+                {{pass}}
+            </div>
+            {{if email['read']:}}
+            <div class="content-read">
+            {{else:}}
+            <div class="content">
+            {{pass}}
+                <div class="subjectandfrom">
+                    <span class="subject"><h2>{{=A(email['subject'], _href=URL('default', 'read_email', args=[email['id']]))}}</h2></span>
+                    <span class="from">(from: {{=email['from']}})</span>
+                </div>
+                <div class="text">
+                    {{=(email['text'][:175] + '...') if len(email['text']) > 175 else email['text']}}
+                </div>
+            </div>
+            <div class="date">
+                <span class="month">{{=email['pretty_date']['month']}}</span>
+                <span class="day">{{=email['pretty_date']['day']}}</span>
+            </div>
+        </div>
+    {{pass}}
+{{pass}}
+</div>
+<div class="bottom"><h2>No More Emails</h2></div>
+<div class="footerspace"></div>
