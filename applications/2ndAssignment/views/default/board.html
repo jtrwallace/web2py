@@ -1,0 +1,55 @@
+{{extend 'layout.html'}}
+
+<div id="board_page">
+    <div id="board_container">
+        <div class="top_bar" id="board_top_bar">
+            {{if auth.is_logged_in():}}
+                {{=A('New Post', _class='btn', _id='create_post', _href=URL('default', 'create_post', args=[board['id']]))}}
+            {{else:}}
+                 {{=A('New Post', _class='btn', _id='create_post_hidden', _href=URL('default', 'create_post'))}}
+            {{pass}}
+            <h1>{{=board['board_name']}} Board</h1>
+            <div class="signup_signin">
+            {{if not auth.is_logged_in():}}
+                {{=A('Log In', _class='btn', _id='signin_button', _href=URL('default', 'user', args=['login'], vars=dict(_next=URL(args=request.args, vars=request.vars))))}}
+                {{=A('Sign Up', _class='btn', _id='signup_button', _href=URL('default', 'user', args=['register'], vars=dict(_next=URL(args=request.args, vars=request.vars))))}}
+            {{pass}}
+            </div>
+        </div>
+        <div id="board_description">
+            {{=board['board_description']}}
+        </div>
+        {{if len(posts) > 0:}}
+        <div id="board_content">
+            {{for post in posts:}}
+            <div class="single_post">
+                <div class="post_title_date">
+                    <h4>{{=post['post_title']}}</h4>
+                    <span class="posting_time">Posted: {{=post['posting_time_pretty']}}</span>
+                </div>
+                <div class="post_content">
+                    <p>{{=post['post_content']}}</p>
+                </div>
+                <div class="edit_and_delete">
+                    {{if post['post_author'] == auth.user_id:}}
+                        {{=A('edit', _id='edit_button', _href=URL('default', 'edit_post', args=[post['id']], user_signature=True))}}
+                        {{=A('delete', _id='delete_button', _href=URL('default', 'delete_post', args=[post['id']], user_signature=True))}}
+                    {{pass}}
+                </div>
+            </div>
+            {{pass}}
+        </div>
+        {{else:}}
+        <div class="no_posts">
+            {{if auth.is_logged_in():}}
+            <p>No posts yet!<br>Click <b>Create Post</b> above to be the first!</p>
+            {{else:}}
+            <p>No posts yet!<br><b>Log in</b> or create an account above to be the first!</p>
+            {{pass}}
+        </div>
+        {{pass}}
+        <div class="back_button">
+            {{=A('⟵ Back to Boards', _class='btn', _id='back_to_boards', _href=URL('default', 'boards'))}}
+        </div>
+    </div>
+</div>

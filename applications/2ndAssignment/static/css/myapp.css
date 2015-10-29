@@ -1,0 +1,598 @@
+/* line 1, ../sass/_main.scss */
+.colorful {
+  color: #bb8833;
+}
+
+/* line 6, ../sass/_main.scss */
+.btn .fa {
+  padding-right: 0.5em;
+}
+
+/* line 11, ../sass/_main.scss */
+.msg_content {
+  white-space: pre-wrap;
+}
+
+/* line 15, ../sass/_main.scss */
+body {
+  background-color: white;
+}
+
+/* line 19, ../sass/_main.scss */
+main {
+  margin: 10% auto 85% auto;
+}
+
+/* line 24, ../sass/_main.scss */
+#singin_page {
+  margin: 10% auto 85% auto;
+}
+
+/* line 28, ../sass/_main.scss */
+h1 {
+  text-align: center;
+  font-weight: 100;
+  font-size: 40pt;
+  color: #DB5029;
+}
+
+/* line 35, ../sass/_main.scss */
+#main_page_h1 {
+  font-weight: 200;
+  font-size: 48pt;
+  letter-spacing: 5px;
+}
+
+/* line 41, ../sass/_main.scss */
+h2 {
+  text-align: center;
+  font-weight: 100;
+  font-size: 35pt;
+  color: #DB5029;
+}
+
+/* line 48, ../sass/_main.scss */
+h3 {
+  text-align: center;
+  font-weight: 100;
+  font-size: 30pt;
+  color: white;
+}
+
+/* line 55, ../sass/_main.scss */
+h4 {
+  text-align: center;
+  font-weight: 200;
+  font-size: 22pt;
+  color: white;
+}
+
+/* line 62, ../sass/_main.scss */
+#login_h1 {
+  margin: auto auto 60px auto;
+  font-size: 50pt;
+}
+
+/* line 67, ../sass/_main.scss */
+#signin_h2 {
+  margin: 20px auto 30px auto;
+}
+
+/* line 71, ../sass/_main.scss */
+.container {
+  margin: auto;
+}
+
+/* line 75, ../sass/_main.scss */
+#login_box {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  width: 25%;
+  margin: 20px auto 20px auto;
+  border-style: solid;
+  border-color: #224B60;
+  border-width: 3px;
+  background-color: white;
+}
+
+/* line 88, ../sass/_main.scss */
+.login_box_text {
+  text-align: center;
+  font-size: 15pt;
+  font-weight: 200;
+}
+
+/* line 94, ../sass/_main.scss */
+#login_text_signup {
+  margin-top: 30px;
+}
+
+/* line 102, ../sass/_main.scss */
+.btn {
+  background-image: none;
+  border-radius: 0px;
+  font-weight: 200;
+}
+
+/* line 108, ../sass/_main.scss */
+#login_button_signup {
+  width: 50%;
+  margin: 20px auto 30px auto;
+  padding: 15px;
+  font-size: 20pt;
+  background-color: #224B60;
+  border: none;
+}
+
+/* line 117, ../sass/_main.scss */
+#login_button_signin {
+  width: 50%;
+  margin: 20px auto 20px auto;
+  padding: 15px;
+  font-size: 20pt;
+  background-color: #A0AC24;
+  border: none;
+}
+
+/* line 126, ../sass/_main.scss */
+.col-lg-6 {
+  margin: auto;
+  float: none;
+}
+
+/* line 131, ../sass/_main.scss */
+.form-group {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  float: none;
+  text-align: center;
+  margin: auto;
+}
+
+/* line 141, ../sass/_main.scss */
+.form-horizontal .control-label {
+  text-align: left;
+  float: none;
+  margin: auto;
+  padding-bottom: 10px;
+  width: 75%;
+}
+
+/* line 149, ../sass/_main.scss */
+.col-sm-9 {
+  margin: auto;
+  float: none;
+}
+
+/* line 154, ../sass/_main.scss */
+.form-control {
+  border-radius: 0px;
+  border-color: #224B60;
+}
+
+/* line 159, ../sass/_main.scss */
+.btn.btn-primary.btn-default {
+  background-color: #9FAE06;
+  border: none;
+  font-weight: 100;
+  text-shadow: none;
+  font-size: 25px;
+}
+
+/* line 167, ../sass/_main.scss */
+.btn.btn-default.w2p-form-button {
+  background-color: #224B60;
+  border: none;
+  font-weight: 100;
+  text-shadow: none;
+  color: white;
+  font-size: 25px;
+}
+
+/* line 176, ../sass/_main.scss */
+.col-sm-9.col-sm-offset-3 {
+  margin: 20px auto auto auto;
+}
+
+/* line 180, ../sass/_main.scss */
+#boards_list {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 90%;
+  margin: auto;
+}
+
+/* line 193, ../sass/_main.scss */
+.single_board {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  width: 300px;
+  margin: 20px;
+  color: white;
+  text-align: center;
+}
+
+/* line 204, ../sass/_main.scss */
+.bp_name_and_updated {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  background-color: #DB5029;
+  padding: 20px;
+  margin: auto;
+  width: 300px;
+  height: 150px;
+}
+
+/* line 216, ../sass/_main.scss */
+.bp_last_updated {
+  font-weight: 100;
+  font-size: 12pt;
+}
+
+/* line 221, ../sass/_main.scss */
+.bp_board_counts {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  margin: auto;
+  font-weight: 100;
+  font-size: 25pt;
+}
+
+/* line 231, ../sass/_main.scss */
+.bp_new_today {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #678F9A;
+  width: 150px;
+  height: 150px;
+  margin: auto;
+}
+
+/* line 243, ../sass/_main.scss */
+.bp_total {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #747466;
+  width: 150px;
+  height: 150px;
+  margin: auto;
+}
+
+/* line 255, ../sass/_main.scss */
+.top_bar {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  width: 85%;
+  margin: auto;
+  border-bottom: solid;
+  border-color: #747466;
+  border-width: 1px;
+  padding-bottom: 20px;
+  padding-top: 20px;
+}
+
+/* line 269, ../sass/_main.scss */
+.top_bar h1 {
+  margin: auto;
+  flex-basis: 60%;
+}
+
+/* line 274, ../sass/_main.scss */
+#create_board {
+  background-color: #9FAE06;
+  color: white;
+  font-size: 16pt;
+  font-weight: 100;
+  margin: auto 0 auto 5%;
+  flex-basis: 20%;
+}
+
+/* line 283, ../sass/_main.scss */
+#create_board_hidden {
+  background-color: white;
+  color: white;
+  font-size: 16pt;
+  font-weight: 100;
+  margin: auto 0 auto 5%;
+  flex-basis: 20%;
+  pointer-events: none;
+  cursor: default;
+}
+
+/* line 294, ../sass/_main.scss */
+#create_board_form_container {
+  width: 50%;
+  margin: auto;
+}
+
+/* line 299, ../sass/_main.scss */
+textarea.form-control {
+  height: 80px;
+}
+
+/* line 303, ../sass/_main.scss */
+.signup_signin {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  margin: auto 5% auto 0;
+  flex-basis: 20%;
+}
+
+/* line 312, ../sass/_main.scss */
+#signin_button {
+  background-color: #A0AC24;
+  color: white;
+  font-size: 13pt;
+  font-weight: 100;
+  margin: 0px;
+}
+
+/* line 320, ../sass/_main.scss */
+#signup_button {
+  background-color: #224B60;
+  color: white;
+  font-size: 13pt;
+  font-weight: 100;
+  margin: 0px;
+}
+
+/* line 328, ../sass/_main.scss */
+a:link {
+  color: white;
+  text-decoration: none;
+}
+
+/* line 333, ../sass/_main.scss */
+a:visited {
+  color: white;
+  text-decoration: none;
+}
+
+/* line 338, ../sass/_main.scss */
+a:hover {
+  color: #D2DF00;
+  text-decoration: none;
+}
+
+/* line 343, ../sass/_main.scss */
+a:active {
+  color: #9FAE06;
+  text-decoration: none;
+}
+
+/* line 348, ../sass/_main.scss */
+.bp_name_and_updated a:hover {
+  letter-spacing: 1px;
+}
+
+/* line 352, ../sass/_main.scss */
+#create_post {
+  background-color: #9FAE06;
+  color: white;
+  font-size: 16pt;
+  font-weight: 100;
+  margin: auto 0 auto 5%;
+  flex-basis: 20%;
+}
+
+/* line 361, ../sass/_main.scss */
+#create_post_hidden {
+  background-color: #DB5029;
+  color: #DB5029;
+  font-size: 16pt;
+  font-weight: 100;
+  margin: auto 0 auto 5%;
+  flex-basis: 20%;
+  pointer-events: none;
+  cursor: default;
+}
+
+/* line 372, ../sass/_main.scss */
+#create_post_form_container {
+  width: 50%;
+  margin: auto;
+}
+
+/* line 377, ../sass/_main.scss */
+textarea.form-control {
+  height: 350px;
+}
+
+/* line 381, ../sass/_main.scss */
+#board_container {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+/* line 389, ../sass/_main.scss */
+#board_top_bar {
+  border-bottom: none;
+  background-color: #DB5029;
+}
+
+/* line 394, ../sass/_main.scss */
+#board_top_bar h1 {
+  color: white;
+}
+
+/* line 398, ../sass/_main.scss */
+#board_description {
+  margin: auto;
+  background-color: #224B60;
+  width: 85%;
+  text-align: center;
+  font-weight: 200;
+  color: white;
+  font-size: 14pt;
+  padding: 10px;
+}
+
+/* line 409, ../sass/_main.scss */
+#board_content {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 85%;
+  margin: auto;
+  background-color: #97978C;
+  padding: 15px;
+}
+
+/* line 424, ../sass/_main.scss */
+.single_post {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  margin: 10px;
+  width: 300px;
+}
+
+/* line 433, ../sass/_main.scss */
+.post_title_date {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  margin: auto;
+  background-color: #224B60;
+  width: 300px;
+  height: 120px;
+  text-align: center;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+/* line 447, ../sass/_main.scss */
+.post_title_date h4 {
+  margin: auto;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+/* line 453, ../sass/_main.scss */
+.posting_time {
+  margin: 5px;
+  color: white;
+  font-weight: 100;
+}
+
+/* line 459, ../sass/_main.scss */
+.post_content {
+  margin: auto;
+  background-color: white;
+  padding: 10px;
+  overflow: scroll;
+  height: 300px;
+  width: 300px;
+  white-space: pre-line;
+}
+
+/* line 469, ../sass/_main.scss */
+.post_content p {
+  margin-top: -22px;
+  margin-bottom: -22px;
+}
+
+/* line 474, ../sass/_main.scss */
+.edit_and_delete {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  margin: auto;
+  background-color: #47463B;
+  width: 300px;
+  height: 25px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+/* line 487, ../sass/_main.scss */
+#edit_button {
+  margin: auto;
+}
+
+/* line 491, ../sass/_main.scss */
+#delete_button {
+  margin: auto;
+}
+
+/* line 495, ../sass/_main.scss */
+a#delete_button:hover {
+  color: #DB5029;
+}
+
+/* line 499, ../sass/_main.scss */
+.no_posts {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 85%;
+  margin: auto;
+  background-color: #D4D5C4;
+  padding: 15px;
+  text-align: center;
+  height: 200px;
+  font-size: 20pt;
+  font-weight: 200;
+}
+
+/* line 518, ../sass/_main.scss */
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 2px;
+}
+
+/* line 523, ../sass/_main.scss */
+.back_button {
+  margin: 20px auto auto auto;
+  text-align: center;
+}
+
+/* line 528, ../sass/_main.scss */
+#back_to_boards {
+  background-color: #224B60;
+  color: white;
+  font-size: 22pt;
+  font-weight: 100;
+}

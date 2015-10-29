@@ -1,0 +1,21 @@
+(dp1
+S'output'
+p2
+S"<type 'exceptions.AttributeError'> 'Rows' object has no attribute 'count'"
+p3
+sS'layer'
+p4
+S'/Users/Joshua/Git Repositories/CMPS 183/web2py/applications/2ndAssignment/controllers/default.py'
+p5
+sS'code'
+p6
+S'# -*- coding: utf-8 -*-\n# this file is released under public domain and you can use without limitations\n\nfrom datetime import datetime\nimport calendar\n\ndef index():\n    redirect(URL(\'default\', \'boards\'))\n    return 0\n\ndef boards():\n    boards = db().select(db.boards.ALL, orderby=~db.boards.board_last_updated)\n    for board in boards:\n        board[\'board_pretty_updated\'] = pretty_date(board[\'board_last_updated\'])\n        board[\'total_count\'] = db(db.posts.board_id == board.id).select().count\n    return dict(boards=boards)\n\ndef board():\n    board = db.boards(request.args(0))\n    posts = db(db.posts.board_id == board.id).select(orderby=~db.posts.posting_time)\n    for post in posts:\n        post[\'posting_time_pretty\'] = pretty_date(post[\'posting_time\'])\n    return dict(board=board, posts=posts)\n\ndef create_board():\n    db.boards.board_author.readable = db.boards.board_author.writable = False\n    db.boards.board_last_updated.readable = db.boards.board_last_updated.writable = False\n    db.boards.board_pretty_updated.readable = db.boards.board_pretty_updated.writable = False\n    form=SQLFORM(db.boards)\n    if form.process().accepted:\n        redirect(URL(\'default\', \'boards\'))\n    return dict(form=form)\n\ndef create_post():\n    board = db.boards(request.args(0))\n    db.posts.posting_time.readable = db.posts.posting_time.writable = False\n    db.posts.post_author.readable = db.posts.post_author.writable = False\n    db.posts.board_id.readable = db.posts.board_id.writable = False\n    db.posts.posting_time_pretty.readable = db.posts.posting_time_pretty.writable = False\n    form=SQLFORM(db.posts)\n    form.vars.board_id = board.id\n    if form.process().accepted:\n        board.board_last_updated = datetime.utcnow()\n        board.update_record()\n        try:\n            db.commit()\n        except Exception , e:\n            logger.warning("Transaction commit failed while updating board time")\n            redirect(URL(\'default\', \'create_post\', args=board.id))\n        redirect(URL(\'default\', \'board\', args=board.id))\n    return dict(form=form, board=board)\n\ndef pretty_date(date):\n    month_abr = calendar.month_abbr[date.month]\n    pretty = month_abr + " " + str(date.day) + ", " + str(date.year) + " " + str(date.time())\n    return pretty\n\ndef user():\n    auth.settings.login_next=URL(\'default\', \'boards\')\n    return dict(form=auth())\n\n\n@cache.action()\ndef download():\n    return response.download(request, db)\n\n\ndef call():\n    return service()\n\n\n\nresponse._vars=response._caller(boards)\n'
+p7
+sS'snapshot'
+p8
+(dp9
+sS'traceback'
+p10
+S'Traceback (most recent call last):\n  File "/Users/Joshua/Git Repositories/CMPS 183/web2py/gluon/restricted.py", line 227, in restricted\n    exec ccode in environment\n  File "/Users/Joshua/Git Repositories/CMPS 183/web2py/applications/2ndAssignment/controllers/default.py", line 73, in <module>\n  File "/Users/Joshua/Git Repositories/CMPS 183/web2py/gluon/globals.py", line 412, in <lambda>\n    self._caller = lambda f: f()\n  File "/Users/Joshua/Git Repositories/CMPS 183/web2py/applications/2ndAssignment/controllers/default.py", line 15, in boards\n    board[\'total_count\'] = db(db.posts.board_id == board.id).select().count\nAttributeError: \'Rows\' object has no attribute \'count\'\n'
+p11
+s.
