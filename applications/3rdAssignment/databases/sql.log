@@ -1,0 +1,98 @@
+timestamp: 2015-10-26T19:01:46.769016
+CREATE TABLE auth_user(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name CHAR(128),
+    last_name CHAR(128),
+    email CHAR(512),
+    password CHAR(512),
+    registration_key CHAR(512),
+    reset_password_key CHAR(512),
+    registration_id CHAR(512)
+);
+success!
+timestamp: 2015-10-26T19:01:46.771403
+CREATE TABLE auth_group(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2015-10-26T19:01:46.772721
+CREATE TABLE auth_membership(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE  
+);
+success!
+timestamp: 2015-10-26T19:01:46.773990
+CREATE TABLE auth_permission(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE  ,
+    name CHAR(512),
+    table_name CHAR(512),
+    record_id INTEGER
+);
+success!
+timestamp: 2015-10-26T19:01:46.775275
+CREATE TABLE auth_event(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time_stamp TIMESTAMP,
+    client_ip CHAR(512),
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    origin CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2015-10-26T19:01:46.776540
+CREATE TABLE auth_cas(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    created_on TIMESTAMP,
+    service CHAR(512),
+    ticket CHAR(512),
+    renew CHAR(1)
+);
+success!
+timestamp: 2015-10-26T19:04:11.839468
+CREATE TABLE stores(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    store_name CHAR(512)
+);
+success!
+timestamp: 2015-10-28T20:08:12.331187
+CREATE TABLE store(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512),
+    phone CHAR(512),
+    created_on TIMESTAMP,
+    star_rating DOUBLE,
+    description TEXT
+);
+success!
+timestamp: 2015-10-28T20:08:12.333033
+CREATE TABLE ingredient(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2015-10-28T20:08:12.334323
+CREATE TABLE canbuy(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    store INTEGER REFERENCES store (id) ON DELETE CASCADE  ,
+    ingredient INTEGER REFERENCES ingredient (id) ON DELETE CASCADE  ,
+    is_favorite CHAR(1)
+);
+success!
+timestamp: 2015-10-28T20:11:16.263127
+ALTER TABLE ingredient ADD favorite_store INTEGER REFERENCES store (id) ON DELETE CASCADE  ;
+success!
+timestamp: 2015-11-03T19:32:44.487780
+CREATE TABLE rating(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    image_id INTEGER,
+    thumbs CHAR(512)
+);
+success!
