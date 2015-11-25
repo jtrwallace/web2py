@@ -1,5 +1,8 @@
 {{extend 'layout.html'}}
 
+<div id="board_target"></div>
+
+<script id="board_template" type="text/ractive">
 <div id="board_page">
     <div id="board_container">
         <div class="top_bar" id="board_top_bar">
@@ -8,7 +11,7 @@
             {{else:}}
                  {{=A('New Post', _class='btn', _id='create_post_hidden', _href=URL('default', 'create_post'))}}
             {{pass}}
-            <h1>{{=board['board_name']}} Board</h1>
+            <h1>{% board['board_name] %} Board</h1>
             <div class="signup_signin">
             {{if not auth.is_logged_in():}}
                 {{=A('Log In', _class='btn', _id='signin_button', _href=URL('default', 'user', args=['login'], vars=dict(_next=URL(args=request.args, vars=request.vars))))}}
@@ -17,29 +20,30 @@
             </div>
         </div>
         <div id="board_description">
-            {{=board['board_description']}}
+            {% board['board_description'] %}
         </div>
-        {{if len(posts) > 0:}}
+        {% #if number_of_posts > 0 %}
         <div id="board_content">
-            {{for post in posts:}}
+            {% #posts_list %}
             <div class="single_post">
                 <div class="post_title_date">
-                    <h4>{{=post['post_title']}}</h4>
-                    <span class="posting_time">Posted: {{=post['posting_time_pretty']}}</span>
+                    <h4>{% post_title %}</h4>
+                    <span class="posting_time">Posted: {% posting_time_pretty %}</span>
                 </div>
                 <div class="post_content">
-                    <p>{{=post['post_content']}}</p>
+                    <p>{% post_content %}</p>
                 </div>
                 <div class="edit_and_delete">
-                    {{if post['post_author'] == auth.user_id:}}
+                    {% if post_author === user_id %}
                         {{=A('edit', _id='edit_button', _href=URL('default', 'edit_post', args=[post['id']], user_signature=True))}}
                         {{=A('delete', _id='delete_button', _href=URL('default', 'delete_post', args=[post['id']], user_signature=True))}}
-                    {{pass}}
+                    {% /if %}
                 </div>
             </div>
-            {{pass}}
+            {% /posts_list %}
         </div>
-        {{else:}}
+        {% /if %}
+        {% #if number_of_posts === 0 %}
         <div class="no_posts">
             {{if auth.is_logged_in():}}
             <p>No posts yet!<br>Click <b>Create Post</b> above to be the first!</p>
@@ -47,9 +51,243 @@
             <p>No posts yet!<br><b>Log in</b> or create an account above to be the first!</p>
             {{pass}}
         </div>
-        {{pass}}
+        {% /if %}
         <div class="back_button">
             {{=A('⟵ Back to Boards', _class='btn', _id='back_to_boards', _href=URL('default', 'boards'))}}
         </div>
     </div>
 </div>
+</script>
+
+<script>
+$(function() {
+  // Ractive object
+  var MAIN = new Ractive({
+    el: '#board_target',
+    template: '#board_template',
+    delimiters: ['{%', '%}'],
+    tripleDelimiters: ['{%%', '%%}'],
+    data: {
+      posts_list: [],
+      number_of_posts: 0,
+      user_id: "{{=auth.user_id}}",
+      board: "",
+      latest_post_id: ""
+    }
+  });
+
+  //Load the initial list of posts.
+  $.ajax("{{=URL('default', 'load_posts')}}",
+              {
+                  data: {
+                    board_id: "{{=board_id}}" //request.vars.board_id
+                  },
+                  method: 'POST',
+                  success: function (data) {
+                      sort_list_by_date(data['posts'], 'posting_time', set_MAIN_list);
+                      MAIN.set('board', data['board']);
+                      MAIN.set('number_of_posts', data['posts'].length());
+                  }
+              }
+  );
+
+  //Sort the posts based on the posting_time field and update the MAIN list.
+  function sort_list_by_date(data, field, callback) {
+    data.sort(function(a, b) {
+        var date1 = Date.parse(a[field]);
+        var date2 = Date.parse(b[field]);
+        return date2 - date1;
+    });
+    callback(data);
+  }
+
+  //Reset the MAIN boards list.
+  function set_MAIN_list(list) {
+    MAIN.set('boards_list', list);
+  }
+
+  //Creates an empty post with a new UUID.
+  function create_draft_post_object() {
+    return {
+        active_draft_content: "",
+        active_draft_title: "",
+        post_author: "{{=auth.user_id}}",
+        post_content: "",
+        post_title: "",
+        board_id: "{{=board_id}}",
+        post_id: generateUUID(),
+        posting_time: get_UTC_String(),
+        posting_time_pretty: get_pretty_time(),
+        is_draft: true
+    };
+  }
+
+  //Updates the time and draft status before becoming a real post and being sent to the server.
+  function prepare_saved_post_object(post) {
+    post['is_draft'] = false;
+    post['posting_time'] = get_UTC_String();
+    post['posting_time_pretty'] = get_pretty_time();
+    post['active_draft_title'] = "";
+    post['active_draft_content'] = "";
+    return post;
+  }
+
+  //http://stackoverflow.com/questions/7176908/how-to-get-index-of-object-by-its-property-in-javascript
+  function findWithAttr(array, attr, value) {
+    for(var i = 0; i < array.length; i += 1) {
+        if(array[i][attr] === value) {
+            return i;
+        }
+    }
+  }
+
+  //To retrieve the time in UTC string format
+  function get_UTC_String() {
+      var date = new Date();
+      return date.toUTCString();
+  }
+
+  //Makes the date more readable and in user's time zone.
+  function get_pretty_time() {
+    var date = new Date();
+    var full_date = date.toString();
+    var split_date = full_date.split(" ");
+    var split_time = split_date[4].split(":");
+    return split_date[1] + " " + split_date[2] + " " + split_time[0] + ":" + split_time[1];
+  }
+
+  //Save the active draft to the real name and description.
+  function copy_active(board) {
+    board['board_name'] = board['active_draft_name'];
+    board['board_description'] = board['active_draft_description'];
+    return board;
+  }
+
+  //Moves the cursor to the specified element in a specific board.
+  function set_focus(board_id, element_id) {
+    MAIN.set('latest_board_id', board_id);
+    document.getElementById(element_id).focus();
+  }
+
+  //Create a new draft board when the Create Board button is clicked.
+  MAIN.on("new-board", function(e) {
+    var boards_list = MAIN.get('boards_list');
+    //Add a new board to the boards_list with a unique UUID. Not sending this to the server yet.
+    var new_draft_board = create_draft_board_object();
+    boards_list.unshift(new_draft_board);
+    sort_boards(boards_list, set_MAIN_list);
+    //Set the focus to the newly created board.
+    set_focus(new_draft_board['board_id'], "focus_input");
+  });
+
+  //Save the board to the server when the Save Board button is clicked.
+  MAIN.on("save-board", function(e) {
+    var boards_list = MAIN.get('boards_list');
+    //Get the ID from the click.
+    var save_button = $(e.original.target);
+    var clicked_id = save_button.data('boardid');
+    //Retrieve the specific board from the list.
+    var board_list_index = findWithAttr(boards_list, 'board_id', clicked_id);
+    var board = boards_list[board_list_index];
+    board = copy_active(board);
+    //If the board name isn't empty, then:
+    if ($.trim(board['board_name']).length > 0) {
+        //Set its fields for inclusion as a permanent board.
+        var prepared_board = prepare_saved_board_object(board);
+        //Put that altered board back into the local boards_list
+        boards_list[board_list_index] = prepared_board;
+        sort_boards(boards_list, set_MAIN_list);
+        //Then send it to the server.
+        send_record(prepared_board);
+    } else {
+        set_focus(clicked_id, "focus_input");
+    }
+  });
+
+  MAIN.on("loses-focus", function(e) {
+    //Ideally this would only send the draft in question. Implement Later.
+    periodic_send();
+  });
+
+  MAIN.on("gains-focus", function(e) {
+    //Ideally this would only send the draft in question. Implement Later.
+    periodic_send();
+  });
+
+  //Called every 10 seconds
+  function periodic_send() {
+    var boards_list = MAIN.get('boards_list');
+    //Find the drafts and check if they've had any updates.
+    for (var i = 0; i < boards_list.length; i += 1) {
+        if(boards_list[i]['is_draft'] === true) {
+            var board = boards_list[i];
+            //If the two fields differ
+            if (board['board_name'] !== board['active_draft_name'] || board['board_description'] !== board['active_draft_description']) {
+                //If they differ such that there is no text now but there was before
+                if (($.trim(board['board_name']).length > 0 && $.trim(board['active_draft_name']).length === 0) && ($.trim(board['active_draft_description']).length === 0)) {
+                    //Then we know that this is a draft that was on the server and we should now delete it from the server but not from the local list.
+                    board = copy_active(board);
+                    sort_boards(boards_list, set_MAIN_list);
+                    delete_record(board);
+                } else {
+                    board = copy_active(board);
+                    sort_boards(boards_list, set_MAIN_list);
+                    send_record(board);
+                }
+            }
+        }
+    }
+  }
+
+  //Simply sends a complete board to the controller.
+  function send_record(board) {
+    $.ajax("{{=URL('default', 'add_board', user_signature=True)}}",
+            {
+              data: {
+                board_name: board['board_name'], //request.vars.board_name
+                board_description: board['board_description'], //request.vars.board_description
+                is_draft: board['is_draft'], //request.vars.is_draft
+                board_id: board['board_id'], //request.vars.board_id
+                active_draft_description: board['active_draft_description'], //request.vars.active_draft_description
+                active_draft_name: board['active_draft_name'], //request.vars.active_draft_name
+                board_last_updated: board['board_last_updated'], //request.vars.board_last_updated
+                board_pretty_updated: board['board_pretty_updated'] //request.vars.board_pretty_updated
+              },
+              method: 'POST',
+              success: function() {},
+              error: function() {}
+            }
+    );
+  }
+
+  //Deletes a record by board_id
+  function delete_record(board) {
+    $.ajax("{{=URL('default', 'del_board', user_signature=True)}}",
+            {
+              data: {
+                board_id: board['board_id'] // request.vars.board_id
+              },
+              method: 'POST',
+              success: function() {},
+              error: function() {}
+            }
+    );
+  }
+
+  // http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+  function generateUUID(){
+    var d = new Date().getTime();
+    if(window.performance && typeof window.performance.now === "function"){
+        d += performance.now(); //use high-precision timer if available
+    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+    });
+  }
+
+  setInterval(periodic_send, 5000);
+
+});
+</script>

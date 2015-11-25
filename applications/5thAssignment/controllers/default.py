@@ -26,11 +26,14 @@ def load_boards():
     return response.json(list(all_boards))
 
 def board():
-    board = db(db.boards.board_id == request.args(0)).select().first()
+    return dict(board_id=request.args(0))
+
+def load_posts():
+    board = db(db.boards.board_id == request.vars.board_id).select().first()
     posts = db(db.posts.board_id == board.id).select(orderby=~db.posts.posting_time)
     for post in posts:
         post['posting_time_pretty'] = pretty_date(post['posting_time'])
-    return dict(board=board, posts=posts)
+    return response.json(list(posts), list(board))
 
 @auth.requires_signature()
 def add_board():

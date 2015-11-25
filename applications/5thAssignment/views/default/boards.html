@@ -80,16 +80,16 @@ $(function() {
               {
                   method: 'POST',
                   success: function (data) {
-                      sort_boards(data, set_MAIN_list)
+                      sort_list_by_date(data, 'board_last_updated', set_MAIN_list)
                   }
               }
   );
 
   //Sort the boards based on the last_updated field and update the MAIN list.
-  function sort_boards(data, callback) {
+  function sort_list_by_date(data, field, callback) {
     data.sort(function(a, b) {
-        var date1 = Date.parse(a['board_last_updated']);
-        var date2 = Date.parse(b['board_last_updated']);
+        var date1 = Date.parse(a[field]);
+        var date2 = Date.parse(b[field]);
         return date2 - date1;
     });
     callback(data);
@@ -170,7 +170,7 @@ $(function() {
     //Add a new board to the boards_list with a unique UUID. Not sending this to the server yet.
     var new_draft_board = create_draft_board_object();
     boards_list.unshift(new_draft_board);
-    sort_boards(boards_list, set_MAIN_list);
+    sort_list_by_date(boards_list, set_MAIN_list);
     //Set the focus to the newly created board.
     set_focus(new_draft_board['board_id'], "focus_input");
   });
@@ -191,7 +191,7 @@ $(function() {
         var prepared_board = prepare_saved_board_object(board);
         //Put that altered board back into the local boards_list
         boards_list[board_list_index] = prepared_board;
-        sort_boards(boards_list, set_MAIN_list);
+        sort_list_by_date(boards_list, set_MAIN_list);
         //Then send it to the server.
         send_record(prepared_board);
     } else {
@@ -222,11 +222,11 @@ $(function() {
                 if (($.trim(board['board_name']).length > 0 && $.trim(board['active_draft_name']).length === 0) && ($.trim(board['active_draft_description']).length === 0)) {
                     //Then we know that this is a draft that was on the server and we should now delete it from the server but not from the local list.
                     board = copy_active(board);
-                    sort_boards(boards_list, set_MAIN_list);
+                    sort_list_by_date(boards_list, set_MAIN_list);
                     delete_record(board);
                 } else {
                     board = copy_active(board);
-                    sort_boards(boards_list, set_MAIN_list);
+                    sort_list_by_date(boards_list, set_MAIN_list);
                     send_record(board);
                 }
             }
