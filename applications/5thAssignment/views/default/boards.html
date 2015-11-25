@@ -1,0 +1,288 @@
+{{extend 'layout.html'}}
+
+<div id="boards_target"></div>
+
+<script id="boards_template" type="text/ractive">
+<div id="boards_page">
+    <div class="top_bar">
+        {{if auth.is_logged_in():}}
+            <button class="btn" id="create_board" on-click="new-board">Create Board</button>
+        {{else:}}
+            {{=A('Create Board', _class='btn', _id='create_board_hidden', _href=URL('default', 'create_board'))}}
+        {{pass}}
+        <h1 id="main_page_h1">SlugBoard</h1>
+        <div class="signup_signin">
+            {{if not auth.is_logged_in():}}
+                {{=A('Log In', _class='btn', _id='signin_button', _href=URL('default', 'user', args=['login'], vars=dict(_next=URL(args=request.args, vars=request.vars))))}}
+                {{=A('Sign Up', _class='btn', _id='signup_button', _href=URL('default', 'user', args=['register'], vars=dict(_next=URL(args=request.args, vars=request.vars))))}}
+            {{pass}}
+        </div>
+    </div>
+
+    <div id="boards_list">
+        {% #boards_list %}
+        <div class="single_board">
+            <div class="bp_name_and_updated">
+                {% #if is_draft === false %}
+                <h3><a href="{% board_url + "/" + board_id %}">{% board_name %}</a></h3>
+                <span class="bp_last_updated">Last Updated: {% board_pretty_updated %}</span>
+                {% /if %}
+                {% #if is_draft === true %}
+                    {% #if board_id === latest_board_id %}
+                    <input type="text" class="board_draft_name" id="focus_input" name="new_board_name" value="{% active_draft_name %}" placeholder="Name" maxlength="15" data-boardid="{% board_id %}" on-blur="loses-focus" on-focus="gains-focus" />
+                    {% /if %}
+                    {% #if board_id !== latest_board_id %}
+                    <input type="text" class="board_draft_name" name="new_board_name" value="{% active_draft_name %}" placeholder="Name" maxlength="15" data-boardid="{% board_id %}" on-blur="loses-focus" on-focus="gains-focus" />
+                    {% /if %}
+                <textarea name="new_board_description" class="board_draft_description" value="{% active_draft_description %}" cols="20" rows="2" class="new_board_description" placeholder="Description" maxlength="130" on-blur="loses-focus" on-focus="gains-focus"></textarea>
+                {% /if %}
+            </div>
+            <div class="bp_board_counts">
+                {% #if is_draft === false %}
+                <div class="bp_new_today">
+                    <h4>New</h4>
+                    <span class="bp_new_today_count">{% new_today %}</span>
+                </div>
+                <div class="bp_total">
+                    <h4>Total</h4>
+                    <span class="bp_total_count">{% total_count %}</span>
+                </div>
+                {% /if %}
+                {% #if is_draft === true %}
+                <div class="save_draft_container">
+                    <button class="btn" id="save_board" on-click="save-board" data-boardid="{% board_id %}">Save Board</button>
+                </div>
+                {% /if %}
+            </div>
+        </div>
+        {% /boards_list %}
+    </div>
+</div>
+</script>
+
+<script>
+$(function() {
+  // Ractive object
+  var MAIN = new Ractive({
+    el: '#boards_target',
+    template: '#boards_template',
+    delimiters: ['{%', '%}'],
+    tripleDelimiters: ['{%%', '%%}'],
+    data: {
+      boards_list: [],
+      latest_board_id: "",
+      board_url: "{{=URL('default', 'board')}}"
+    }
+  });
+
+  //Load the intial list of boards.
+  $.ajax("{{=URL('default', 'load_boards')}}",
+              {
+                  method: 'POST',
+                  success: function (data) {
+                      sort_boards(data, set_MAIN_list)
+                  }
+              }
+  );
+
+  //Sort the boards based on the last_updated field and update the MAIN list.
+  function sort_boards(data, callback) {
+    data.sort(function(a, b) {
+        var date1 = Date.parse(a['board_last_updated']);
+        var date2 = Date.parse(b['board_last_updated']);
+        return date2 - date1;
+    });
+    callback(data);
+  }
+
+  //Reset the MAIN boards list.
+  function set_MAIN_list(list) {
+    MAIN.set('boards_list', list);
+  }
+
+  //Creates an empty board with a new UUID.
+  function create_draft_board_object() {
+    return {
+        active_draft_description: "",
+        active_draft_name: "",
+        board_author: "{{=auth.user_id}}",
+        board_description: "",
+        board_name: "",
+        board_id: generateUUID(),
+        board_last_updated: get_UTC_String(),
+        board_pretty_updated: get_pretty_time(),
+        is_draft: true,
+        new_today: 0,
+        total_count: 0
+    };
+  }
+
+  //Updates the time and draft status before becoming a real board and being sent to the server.
+  function prepare_saved_board_object(board) {
+    board['is_draft'] = false;
+    board['board_last_updated'] = get_UTC_String();
+    board['board_pretty_updated'] = get_pretty_time();
+    board['active_draft_name'] = "";
+    board['active_draft_description'] = "";
+    return board;
+  }
+
+  //http://stackoverflow.com/questions/7176908/how-to-get-index-of-object-by-its-property-in-javascript
+  function findWithAttr(array, attr, value) {
+    for(var i = 0; i < array.length; i += 1) {
+        if(array[i][attr] === value) {
+            return i;
+        }
+    }
+  }
+
+  //To retrieve the time in UTC string format
+  function get_UTC_String() {
+      var date = new Date();
+      return date.toUTCString();
+  }
+
+  //Makes the date more readable and in user's time zone.
+  function get_pretty_time() {
+    var date = new Date();
+    var full_date = date.toString();
+    var split_date = full_date.split(" ");
+    var split_time = split_date[4].split(":");
+    return split_date[1] + " " + split_date[2] + " " + split_time[0] + ":" + split_time[1];
+  }
+
+  //Save the active draft to the real name and description.
+  function copy_active(board) {
+    board['board_name'] = board['active_draft_name'];
+    board['board_description'] = board['active_draft_description'];
+    return board;
+  }
+
+  //Moves the cursor to the specified element in a specific board.
+  function set_focus(board_id, element_id) {
+    MAIN.set('latest_board_id', board_id);
+    document.getElementById(element_id).focus();
+  }
+
+  //Create a new draft board when the Create Board button is clicked.
+  MAIN.on("new-board", function(e) {
+    var boards_list = MAIN.get('boards_list');
+    //Add a new board to the boards_list with a unique UUID. Not sending this to the server yet.
+    var new_draft_board = create_draft_board_object();
+    boards_list.unshift(new_draft_board);
+    sort_boards(boards_list, set_MAIN_list);
+    //Set the focus to the newly created board.
+    set_focus(new_draft_board['board_id'], "focus_input");
+  });
+
+  //Save the board to the server when the Save Board button is clicked.
+  MAIN.on("save-board", function(e) {
+    var boards_list = MAIN.get('boards_list');
+    //Get the ID from the click.
+    var save_button = $(e.original.target);
+    var clicked_id = save_button.data('boardid');
+    //Retrieve the specific board from the list.
+    var board_list_index = findWithAttr(boards_list, 'board_id', clicked_id);
+    var board = boards_list[board_list_index];
+    board = copy_active(board);
+    //If the board name isn't empty, then:
+    if ($.trim(board['board_name']).length > 0) {
+        //Set its fields for inclusion as a permanent board.
+        var prepared_board = prepare_saved_board_object(board);
+        //Put that altered board back into the local boards_list
+        boards_list[board_list_index] = prepared_board;
+        sort_boards(boards_list, set_MAIN_list);
+        //Then send it to the server.
+        send_record(prepared_board);
+    } else {
+        set_focus(clicked_id, "focus_input");
+    }
+  });
+
+  MAIN.on("loses-focus", function(e) {
+    //Ideally this would only send the draft in question. Implement Later.
+    periodic_send();
+  });
+
+  MAIN.on("gains-focus", function(e) {
+    //Ideally this would only send the draft in question. Implement Later.
+    periodic_send();
+  });
+
+  //Called every 10 seconds
+  function periodic_send() {
+    var boards_list = MAIN.get('boards_list');
+    //Find the drafts and check if they've had any updates.
+    for (var i = 0; i < boards_list.length; i += 1) {
+        if(boards_list[i]['is_draft'] === true) {
+            var board = boards_list[i];
+            //If the two fields differ
+            if (board['board_name'] !== board['active_draft_name'] || board['board_description'] !== board['active_draft_description']) {
+                //If they differ such that there is no text now but there was before
+                if (($.trim(board['board_name']).length > 0 && $.trim(board['active_draft_name']).length === 0) && ($.trim(board['active_draft_description']).length === 0)) {
+                    //Then we know that this is a draft that was on the server and we should now delete it from the server but not from the local list.
+                    board = copy_active(board);
+                    sort_boards(boards_list, set_MAIN_list);
+                    delete_record(board);
+                } else {
+                    board = copy_active(board);
+                    sort_boards(boards_list, set_MAIN_list);
+                    send_record(board);
+                }
+            }
+        }
+    }
+  }
+
+  //Simply sends a complete board to the controller.
+  function send_record(board) {
+    $.ajax("{{=URL('default', 'add_board', user_signature=True)}}",
+            {
+              data: {
+                board_name: board['board_name'], //request.vars.board_name
+                board_description: board['board_description'], //request.vars.board_description
+                is_draft: board['is_draft'], //request.vars.is_draft
+                board_id: board['board_id'], //request.vars.board_id
+                active_draft_description: board['active_draft_description'], //request.vars.active_draft_description
+                active_draft_name: board['active_draft_name'], //request.vars.active_draft_name
+                board_last_updated: board['board_last_updated'], //request.vars.board_last_updated
+                board_pretty_updated: board['board_pretty_updated'] //request.vars.board_pretty_updated
+              },
+              method: 'POST',
+              success: function() {},
+              error: function() {}
+            }
+    );
+  }
+
+  //Deletes a record by board_id
+  function delete_record(board) {
+    $.ajax("{{=URL('default', 'del_board', user_signature=True)}}",
+            {
+              data: {
+                board_id: board['board_id'] // request.vars.board_id
+              },
+              method: 'POST',
+              success: function() {},
+              error: function() {}
+            }
+    );
+  }
+
+  // http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+  function generateUUID(){
+    var d = new Date().getTime();
+    if(window.performance && typeof window.performance.now === "function"){
+        d += performance.now(); //use high-precision timer if available
+    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+    });
+  }
+
+  setInterval(periodic_send, 5000);
+
+});
+</script>
