@@ -26,14 +26,20 @@ def load_boards():
     return response.json(list(all_boards))
 
 def board():
-    return dict(board_id=request.args(0))
+    board_id = request.args(0)
+    return locals()
 
 def load_posts():
     board = db(db.boards.board_id == request.vars.board_id).select().first()
-    posts = db(db.posts.board_id == board.id).select(orderby=~db.posts.posting_time)
-    for post in posts:
-        post['posting_time_pretty'] = pretty_date(post['posting_time'])
-    return response.json(list(posts), list(board))
+    board_posts_query = (db.posts.board_id == board.id)
+    board_posts = db(board_posts_query)
+    all_posts = board_posts.select()
+
+    return response.json(list(all_posts))
+
+def load_single_board():
+    board = db(db.boards.board_id == request.vars.board_id).select().first()
+    return response.json(board)
 
 @auth.requires_signature()
 def add_board():
@@ -53,6 +59,27 @@ def add_board():
 def del_board():
     db(db.boards.board_id == request.vars.board_id).delete()
     return "ok"
+
+@auth.requires_signature()
+def add_post():
+    db.posts.update_or_insert((db.posts.post_id == request.vars.post_id),
+            post_id=request.vars.post_id,
+            post_title=request.vars.post_title,
+            post_content=request.vars.post_content,
+            is_draft=json.loads(request.vars.is_draft),
+            active_draft_content=request.vars.active_draft_content,
+            active_draft_title=request.vars.active_draft_title,
+            posting_time=request.vars.posting_time,
+            posting_time_pretty=request.vars.posting_time_pretty,
+            board_id=request.vars.board_id
+            )
+    return "ok"
+
+@auth.requires_signature()
+def del_post():
+    db(db.posts.post_id == request.vars.post_id).delete()
+    return "ok"
+
 
 def create_post():
     board = db.boards(request.args(0))
@@ -93,14 +120,6 @@ def edit_post():
             redirect(URL('default', 'edit_post', args=[post.id, board.id]))
         redirect(URL('default', 'board', args=board.id))
     return dict(board=board, form=form)
-
-@auth.requires_signature()
-def delete_post():
-    post = db.posts(request.args(0))
-    board = post.board_id
-    db(db.posts.id == post.id).delete()
-    redirect(URL('default', 'board', args=board.id))
-    return 0
 
 def date():
     date = datetime.utcnow()

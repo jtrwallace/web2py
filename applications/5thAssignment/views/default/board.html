@@ -7,11 +7,11 @@
     <div id="board_container">
         <div class="top_bar" id="board_top_bar">
             {{if auth.is_logged_in():}}
-                {{=A('New Post', _class='btn', _id='create_post', _href=URL('default', 'create_post', args=[board['id']]))}}
+                <button class="btn" id="create_post" on-click="new-post">New Post</button>
             {{else:}}
                  {{=A('New Post', _class='btn', _id='create_post_hidden', _href=URL('default', 'create_post'))}}
             {{pass}}
-            <h1>{% board['board_name] %} Board</h1>
+            <h1>{% board['board_name'] %} Board</h1>
             <div class="signup_signin">
             {{if not auth.is_logged_in():}}
                 {{=A('Log In', _class='btn', _id='signin_button', _href=URL('default', 'user', args=['login'], vars=dict(_next=URL(args=request.args, vars=request.vars))))}}
@@ -26,6 +26,7 @@
         <div id="board_content">
             {% #posts_list %}
             <div class="single_post">
+                {% #if is_draft === false %}
                 <div class="post_title_date">
                     <h4>{% post_title %}</h4>
                     <span class="posting_time">Posted: {% posting_time_pretty %}</span>
@@ -34,11 +35,28 @@
                     <p>{% post_content %}</p>
                 </div>
                 <div class="edit_and_delete">
-                    {% if post_author === user_id %}
-                        {{=A('edit', _id='edit_button', _href=URL('default', 'edit_post', args=[post['id']], user_signature=True))}}
-                        {{=A('delete', _id='delete_button', _href=URL('default', 'delete_post', args=[post['id']], user_signature=True))}}
+                    {% #if post_author === user_id %}
+                        <button class="btn" id="edit_post" on-click="edit-post" data-postid="{% post_id %}">edit</button>
+                        <button class="btn" id="delete_post" on-click="delete-post" data-postid="{% post_id %}">edit</button>
                     {% /if %}
                 </div>
+                {% /if %}
+                {% #if is_draft === true %}
+                <div class="post_title_draft_container">
+                    {% #if post_id === latest_post_id %}
+                    <h4><textarea type="text" class="post_draft_title" id="focus_input" name="new_post_title" value="{% active_draft_title %}" placeholder="Title" maxlength="40" cols="20" rows="2" data-postid="{% post_id %}" on-blur="loses-focus" on-focus="gains-focus"></textarea></h4>
+                    {% /if %}
+                    {% #if post_id !== latest_post_id %}
+                    <h4><textarea type="text" class="post_draft_title" name="new_post_title" value="{% active_draft_title %}" placeholder="Title" maxlength="40" cols="20" rows="2" data-postid="{% post_id %}" on-blur="loses-focus" on-focus="gains-focus"></textarea></h4>
+                    {% /if %}
+                </div>
+                <div class="post_content_draft_container">
+                    <textarea name="new_post_content" class="post_draft_content" value="{% active_draft_content %}" cols="37" rows="2" placeholder="Post content" on-blur="loses-focus" data-postid="{% post_id %}" on-focus="gains-focus"></textarea>
+                </div>
+                <div class="save_draft_post_container">
+                    <button class="btn" id="save_post" on-click="save-post" data-postid="{% post_id %}">save post</button>
+                </div>
+                {% /if %}
             </div>
             {% /posts_list %}
         </div>
@@ -84,9 +102,23 @@ $(function() {
                   },
                   method: 'POST',
                   success: function (data) {
-                      sort_list_by_date(data['posts'], 'posting_time', set_MAIN_list);
-                      MAIN.set('board', data['board']);
-                      MAIN.set('number_of_posts', data['posts'].length());
+                      if (typeof data !== 'undefined') {
+                        MAIN.set('number_of_posts', data.length);
+                        sort_list_by_date(data, 'posting_time', set_MAIN_list);
+                      }
+                  }
+              }
+  );
+
+  //Load the board information.
+  $.ajax("{{=URL('default', 'load_single_board')}}",
+              {
+                  data: {
+                    board_id: "{{=board_id}}" //request.vars.board_id
+                  },
+                  method: 'POST',
+                  success: function (data) {
+                      MAIN.set('board', data);
                   }
               }
   );
@@ -101,9 +133,12 @@ $(function() {
     callback(data);
   }
 
-  //Reset the MAIN boards list.
+  //Reset the MAIN posts list.
   function set_MAIN_list(list) {
-    MAIN.set('boards_list', list);
+    MAIN.set('posts_list', list);
+    var number = MAIN.get('number_of_posts');
+    number += 1;
+    MAIN.set('number_of_posts', number);
   }
 
   //Creates an empty post with a new UUID.
@@ -156,49 +191,53 @@ $(function() {
     return split_date[1] + " " + split_date[2] + " " + split_time[0] + ":" + split_time[1];
   }
 
-  //Save the active draft to the real name and description.
-  function copy_active(board) {
-    board['board_name'] = board['active_draft_name'];
-    board['board_description'] = board['active_draft_description'];
-    return board;
+  //Save the active draft to the real title and content.
+  function copy_active(post) {
+    post['post_title'] = post['active_draft_title'];
+    post['post_content'] = post['active_draft_content'];
+    return post;
   }
 
-  //Moves the cursor to the specified element in a specific board.
-  function set_focus(board_id, element_id) {
-    MAIN.set('latest_board_id', board_id);
+  //Moves the cursor to the specified element in a specific post.
+  function set_focus(post_id, element_id) {
+    MAIN.set('latest_post_id', post_id);
     document.getElementById(element_id).focus();
   }
 
-  //Create a new draft board when the Create Board button is clicked.
-  MAIN.on("new-board", function(e) {
-    var boards_list = MAIN.get('boards_list');
-    //Add a new board to the boards_list with a unique UUID. Not sending this to the server yet.
-    var new_draft_board = create_draft_board_object();
-    boards_list.unshift(new_draft_board);
-    sort_boards(boards_list, set_MAIN_list);
-    //Set the focus to the newly created board.
-    set_focus(new_draft_board['board_id'], "focus_input");
+  //Create a new draft post when the New Post button is clicked.
+  MAIN.on("new-post", function(e) {
+    var posts_list = MAIN.get('posts_list');
+    //Add a new post to the posts_list with a unique UUID. Not sending this to the server yet.
+    var new_draft_post = create_draft_post_object();
+    posts_list.unshift(new_draft_post);
+    if (posts_list.length > 1) {
+        sort_list_by_date(posts_list, 'posting_time', set_MAIN_list);
+    } else {
+        set_MAIN_list(posts_list);
+    }
+    //Set the focus to the newly created post.
+    set_focus(new_draft_post['post_id'], "focus_input");
   });
 
-  //Save the board to the server when the Save Board button is clicked.
-  MAIN.on("save-board", function(e) {
-    var boards_list = MAIN.get('boards_list');
+  //Save the post to the server when the Save Post button is clicked.
+  MAIN.on("save-post", function(e) {
+    var posts_list = MAIN.get('posts_list');
     //Get the ID from the click.
     var save_button = $(e.original.target);
-    var clicked_id = save_button.data('boardid');
-    //Retrieve the specific board from the list.
-    var board_list_index = findWithAttr(boards_list, 'board_id', clicked_id);
-    var board = boards_list[board_list_index];
-    board = copy_active(board);
-    //If the board name isn't empty, then:
-    if ($.trim(board['board_name']).length > 0) {
-        //Set its fields for inclusion as a permanent board.
-        var prepared_board = prepare_saved_board_object(board);
-        //Put that altered board back into the local boards_list
-        boards_list[board_list_index] = prepared_board;
-        sort_boards(boards_list, set_MAIN_list);
+    var clicked_id = save_button.data('postid');
+    //Retrieve the specific post from the list.
+    var post_list_index = findWithAttr(posts_list, 'post_id', clicked_id);
+    var post = posts_list[post_list_index];
+    post = copy_active(post);
+    //If the post title isn't empty, then:
+    if ($.trim(post['post_title']).length > 0) {
+        //Set its fields for inclusion as a permanent post.
+        var prepared_post = prepare_saved_post_object(post);
+        //Put that altered post back into the local posts_list
+        posts_list[post_list_index] = prepared_post;
+        sort_list_by_date(posts_list, 'posting_time', set_MAIN_list);
         //Then send it to the server.
-        send_record(prepared_board);
+        send_record(prepared_post);
     } else {
         set_focus(clicked_id, "focus_input");
     }
@@ -216,42 +255,43 @@ $(function() {
 
   //Called every 10 seconds
   function periodic_send() {
-    var boards_list = MAIN.get('boards_list');
+    var posts_list = MAIN.get('posts_list');
     //Find the drafts and check if they've had any updates.
-    for (var i = 0; i < boards_list.length; i += 1) {
-        if(boards_list[i]['is_draft'] === true) {
-            var board = boards_list[i];
+    for (var i = 0; i < posts_list.length; i += 1) {
+        if(posts_list[i]['is_draft'] === true) {
+            var post = posts_list[i];
             //If the two fields differ
-            if (board['board_name'] !== board['active_draft_name'] || board['board_description'] !== board['active_draft_description']) {
+            if (post['post_title'] !== post['active_draft_title'] || post['post_content'] !== post['active_draft_content']) {
                 //If they differ such that there is no text now but there was before
-                if (($.trim(board['board_name']).length > 0 && $.trim(board['active_draft_name']).length === 0) && ($.trim(board['active_draft_description']).length === 0)) {
+                if (($.trim(post['post_title']).length > 0 && $.trim(post['active_draft_title']).length === 0) && ($.trim(post['active_draft_content']).length === 0)) {
                     //Then we know that this is a draft that was on the server and we should now delete it from the server but not from the local list.
-                    board = copy_active(board);
-                    sort_boards(boards_list, set_MAIN_list);
-                    delete_record(board);
+                    post = copy_active(post);
+                    sort_list_by_date(posts_list, 'posting_time', set_MAIN_list);
+                    delete_record(post);
                 } else {
-                    board = copy_active(board);
-                    sort_boards(boards_list, set_MAIN_list);
-                    send_record(board);
+                    post = copy_active(post);
+                    sort_list_by_date(posts_list, 'posting_time', set_MAIN_list);
+                    send_record(post);
                 }
             }
         }
     }
   }
 
-  //Simply sends a complete board to the controller.
-  function send_record(board) {
-    $.ajax("{{=URL('default', 'add_board', user_signature=True)}}",
+  //Simply sends a complete post to the controller.
+  function send_record(post) {
+    $.ajax("{{=URL('default', 'add_post', user_signature=True)}}",
             {
               data: {
-                board_name: board['board_name'], //request.vars.board_name
-                board_description: board['board_description'], //request.vars.board_description
-                is_draft: board['is_draft'], //request.vars.is_draft
-                board_id: board['board_id'], //request.vars.board_id
-                active_draft_description: board['active_draft_description'], //request.vars.active_draft_description
-                active_draft_name: board['active_draft_name'], //request.vars.active_draft_name
-                board_last_updated: board['board_last_updated'], //request.vars.board_last_updated
-                board_pretty_updated: board['board_pretty_updated'] //request.vars.board_pretty_updated
+                post_title: post['post_title'], //request.vars.post_title
+                post_content: post['post_content'], //request.vars.post_content
+                is_draft: post['is_draft'], //request.vars.is_draft
+                post_id: post['post_id'], //request.vars.post_id
+                active_draft_content: post['active_draft_content'], //request.vars.active_draft_content
+                active_draft_title: post['active_draft_title'], //request.vars.active_draft_title
+                posting_time: post['posting_time'], //request.vars.posting_time
+                posting_time_pretty: post['posting_time_pretty'], //request.vars.posting_time_pretty
+                board_id: MAIN.get('board')['id']
               },
               method: 'POST',
               success: function() {},
@@ -260,12 +300,12 @@ $(function() {
     );
   }
 
-  //Deletes a record by board_id
-  function delete_record(board) {
-    $.ajax("{{=URL('default', 'del_board', user_signature=True)}}",
+  //Deletes a record by post_id
+  function delete_record(post) {
+    $.ajax("{{=URL('default', 'del_post', user_signature=True)}}",
             {
               data: {
-                board_id: board['board_id'] // request.vars.board_id
+                post_id: post['post_id'] // request.vars.post_id
               },
               method: 'POST',
               success: function() {},

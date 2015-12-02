@@ -601,13 +601,42 @@ textarea.form-control {
 }
 
 /* line 533, ../sass/_main.scss */
+.post_title_draft_container {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  margin: auto;
+  background-color: #224B60;
+  width: 300px;
+  height: 120px;
+  text-align: center;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+/* line 547, ../sass/_main.scss */
+textarea.post_draft_title {
+  margin: auto;
+  padding-top: 35px;
+  background-color: #26749C;
+  text-align: center;
+  color: white;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #E5E5E5;
+  width: 280px;
+  height: 100px;
+}
+
+/* line 560, ../sass/_main.scss */
 .posting_time {
   margin: 5px;
   color: white;
   font-weight: 100;
 }
 
-/* line 539, ../sass/_main.scss */
+/* line 566, ../sass/_main.scss */
 .post_content {
   margin: auto;
   background-color: white;
@@ -618,13 +647,32 @@ textarea.form-control {
   white-space: pre-line;
 }
 
-/* line 549, ../sass/_main.scss */
+/* line 576, ../sass/_main.scss */
 .post_content p {
   margin-top: -22px;
   margin-bottom: -22px;
 }
 
-/* line 554, ../sass/_main.scss */
+/* line 581, ../sass/_main.scss */
+.post_content_draft_container {
+  margin: auto;
+  background-color: white;
+  padding: 10px;
+  overflow: scroll;
+  height: 300px;
+  width: 300px;
+}
+
+/* line 590, ../sass/_main.scss */
+textarea.post_draft_content {
+  margin: auto;
+  width: 280px;
+  height: 280px;
+  border: none;
+  background-color: #F7F7F7;
+}
+
+/* line 598, ../sass/_main.scss */
 .edit_and_delete {
   display: -webkit-flex;
   display: flex;
@@ -638,22 +686,44 @@ textarea.form-control {
   border-bottom-right-radius: 4px;
 }
 
-/* line 567, ../sass/_main.scss */
+/* line 611, ../sass/_main.scss */
+.save_draft_post_container {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  margin: auto;
+  background-color: #9DB000;
+  width: 300px;
+  height: 25px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+/* line 624, ../sass/_main.scss */
 #edit_button {
   margin: auto;
 }
 
-/* line 571, ../sass/_main.scss */
+/* line 628, ../sass/_main.scss */
 #delete_button {
   margin: auto;
 }
 
-/* line 575, ../sass/_main.scss */
+/* line 632, ../sass/_main.scss */
+#save_post {
+  margin: auto;
+  background-color: transparent;
+  color: white;
+  margin-top: -6px;
+}
+
+/* line 639, ../sass/_main.scss */
 a#delete_button:hover {
   color: #DB5029;
 }
 
-/* line 579, ../sass/_main.scss */
+/* line 643, ../sass/_main.scss */
 .no_posts {
   display: -webkit-flex;
   display: flex;
@@ -673,19 +743,19 @@ a#delete_button:hover {
   font-weight: 200;
 }
 
-/* line 598, ../sass/_main.scss */
+/* line 662, ../sass/_main.scss */
 ::-webkit-scrollbar {
   -webkit-appearance: none;
   width: 2px;
 }
 
-/* line 603, ../sass/_main.scss */
+/* line 667, ../sass/_main.scss */
 .back_button {
   margin: 20px auto auto auto;
   text-align: center;
 }
 
-/* line 608, ../sass/_main.scss */
+/* line 672, ../sass/_main.scss */
 #back_to_boards {
   background-color: #224B60;
   color: white;

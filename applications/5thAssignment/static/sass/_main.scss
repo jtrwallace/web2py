@@ -530,6 +530,33 @@ textarea.form-control {
   padding-right: 10px;
 }
 
+.post_title_draft_container {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  margin: auto;
+  background-color: #224B60;
+  width: 300px;
+  height: 120px;
+  text-align: center;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+textarea.post_draft_title {
+  margin: auto;
+  padding-top: 35px;
+  background-color: #26749C;
+  text-align: center;
+  color: white;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #E5E5E5;
+  width: 280px;
+  height: 100px;
+}
+
 .posting_time {
   margin: 5px;
   color: white;
@@ -551,6 +578,23 @@ textarea.form-control {
   margin-bottom: -22px;
 }
 
+.post_content_draft_container {
+  margin: auto;
+  background-color: white;
+  padding: 10px;
+  overflow: scroll;
+  height: 300px;
+  width: 300px;
+}
+
+textarea.post_draft_content {
+  margin: auto;
+  width: 280px;
+  height: 280px;
+  border: none;
+  background-color: #F7F7F7;
+}
+
 .edit_and_delete {
   display: -webkit-flex;
   display: flex;
@@ -564,12 +608,32 @@ textarea.form-control {
   border-bottom-right-radius: 4px;
 }
 
+.save_draft_post_container {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  margin: auto;
+  background-color: #9DB000;
+  width: 300px;
+  height: 25px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
 #edit_button {
   margin: auto;
 }
 
 #delete_button {
   margin: auto;
+}
+
+#save_post {
+  margin: auto;
+  background-color: transparent;
+  color: white;
+  margin-top: -6px;
 }
 
 a#delete_button:hover{

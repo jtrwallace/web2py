@@ -1,14 +1,17 @@
 {{extend 'layout.html'}}
 
+<div id="board_target"></div>
+
+<script id="board_template" type="text/ractive">
 <div id="board_page">
     <div id="board_container">
         <div class="top_bar" id="board_top_bar">
             {{if auth.is_logged_in():}}
-                {{=A('New Post', _class='btn', _id='create_post', _href=URL('default', 'create_post', args=[board['id']]))}}
+                <button class="btn" id="create_post" on-click="new-post">New Post</button>
             {{else:}}
                  {{=A('New Post', _class='btn', _id='create_post_hidden', _href=URL('default', 'create_post'))}}
             {{pass}}
-            <h1>{{=board['board_name']}} Board</h1>
+            <h1>{% board['board_name'] %} Board</h1>
             <div class="signup_signin">
             {{if not auth.is_logged_in():}}
                 {{=A('Log In', _class='btn', _id='signin_button', _href=URL('default', 'user', args=['login'], vars=dict(_next=URL(args=request.args, vars=request.vars))))}}
@@ -17,29 +20,48 @@
             </div>
         </div>
         <div id="board_description">
-            {{=board['board_description']}}
+            {% board['board_description'] %}
         </div>
-        {{if len(posts) > 0:}}
+        {% #if number_of_posts > 0 %}
         <div id="board_content">
-            {{for post in posts:}}
+            {% #posts_list %}
             <div class="single_post">
+                {% #if is_draft === false %}
                 <div class="post_title_date">
-                    <h4>{{=post['post_title']}}</h4>
-                    <span class="posting_time">Posted: {{=post['posting_time_pretty']}}</span>
+                    <h4>{% post_title %}</h4>
+                    <span class="posting_time">Posted: {% posting_time_pretty %}</span>
                 </div>
                 <div class="post_content">
-                    <p>{{=post['post_content']}}</p>
+                    <p>{% post_content %}</p>
                 </div>
                 <div class="edit_and_delete">
-                    {{if post['post_author'] == auth.user_id:}}
-                        {{=A('edit', _id='edit_button', _href=URL('default', 'edit_post', args=[post['id']], user_signature=True))}}
-                        {{=A('delete', _id='delete_button', _href=URL('default', 'delete_post', args=[post['id']], user_signature=True))}}
-                    {{pass}}
+                    {% #if post_author === user_id %}
+                        <button class="btn" id="edit_post" on-click="edit-post" data-postid="{% post_id %}">edit</button>
+                        <button class="btn" id="delete_post" on-click="delete-post" data-postid="{% post_id %}">delete</button>
+                    {% /if %}
                 </div>
+                {% /if %}
+                {% #if is_draft === true %}
+                <div class="post_title_draft_container">
+                    {% #if post_id === latest_post_id %}
+                    <h4><textarea type="text" class="post_draft_title" id="focus_input" name="new_post_title" value="{% active_draft_title %}" placeholder="Title" maxlength="40" cols="20" rows="2" data-postid="{% post_id %}" on-blur="loses-focus" on-focus="gains-focus"></textarea></h4>
+                    {% /if %}
+                    {% #if post_id !== latest_post_id %}
+                    <h4><textarea type="text" class="post_draft_title" name="new_post_title" value="{% active_draft_title %}" placeholder="Title" maxlength="40" cols="20" rows="2" data-postid="{% post_id %}" on-blur="loses-focus" on-focus="gains-focus"></textarea></h4>
+                    {% /if %}
+                </div>
+                <div class="post_content_draft_container">
+                    <textarea name="new_post_content" class="post_draft_content" value="{% active_draft_content %}" cols="37" rows="2" placeholder="Post content" on-blur="loses-focus" data-postid="{% post_id %}" on-focus="gains-focus"></textarea>
+                </div>
+                <div class="save_draft_post_container">
+                    <button class="btn" id="save_post" on-click="save-post" data-postid="{% post_id %}">save post</button>
+                </div>
+                {% /if %}
             </div>
-            {{pass}}
+            {% /posts_list %}
         </div>
-        {{else:}}
+        {% /if %}
+        {% #if number_of_posts === 0 %}
         <div class="no_posts">
             {{if auth.is_logged_in():}}
             <p>No posts yet!<br>Click <b>Create Post</b> above to be the first!</p>
@@ -47,9 +69,337 @@
             <p>No posts yet!<br><b>Log in</b> or create an account above to be the first!</p>
             {{pass}}
         </div>
-        {{pass}}
+        {% /if %}
         <div class="back_button">
             {{=A('⟵ Back to Boards', _class='btn', _id='back_to_boards', _href=URL('default', 'boards'))}}
         </div>
     </div>
 </div>
+</script>
+
+<script>
+$(function() {
+  // Ractive object
+  var MAIN = new Ractive({
+    el: '#board_target',
+    template: '#board_template',
+    delimiters: ['{%', '%}'],
+    tripleDelimiters: ['{%%', '%%}'],
+    data: {
+      posts_list: [],
+      number_of_posts: 0,
+      user_id: parseInt("{{=auth.user_id}}"),
+      board: "",
+      latest_post_id: ""
+    }
+  });
+
+  function load_posts() {
+    $.ajax("{{=URL('default', 'load_posts')}}",
+            {
+                data: {
+                    board_id: "{{=board_id}}" //request.vars.board_id
+                },
+                method: 'POST',
+                success: function (data) {
+                    if (data.length > 0 && typeof data !== 'undefined') {
+                        var posts_list = MAIN.get('posts_list');
+                        if (posts_list.length > 0) {
+                            var new_list = posts_list;
+                            var has_match = false;
+                            for (var i = 0; i < data.length; i += 1) {
+                                for (var j = 0; j < posts_list.length; j += 1) {
+                                    if (hasValue(posts_list[j], 'post_id', data[i]['post_id'])) {
+                                        has_match = true;
+                                        new_list[j] = data[i];
+                                    }
+                                    if (j == posts_list.length) {
+                                        if (has_match == false) {
+                                            new_list.push(data[i]);
+                                            has_match = false;
+                                        }
+                                    }
+                                }
+                            }
+                            MAIN.set('number_of_posts', data.length);
+                            sort_list_by_date(new_list, 'posting_time', set_MAIN_list);
+                        } else {
+                            MAIN.set('number_of_posts', data.length);
+                            sort_list_by_date(data, 'posting_time', set_MAIN_list);
+                        }
+                    }
+                }
+            }
+    );
+  }
+
+  function hasValue(obj, key, value) {
+    return obj.hasOwnProperty(key) && obj[key] === value;
+  }
+
+  //Load the initial list of posts.
+  load_posts();
+
+  //Load the board information.
+  $.ajax("{{=URL('default', 'load_single_board')}}",
+              {
+                  data: {
+                    board_id: "{{=board_id}}" //request.vars.board_id
+                  },
+                  method: 'POST',
+                  success: function (data) {
+                      MAIN.set('board', data);
+                  }
+              }
+  );
+
+  //Sort the posts based on the posting_time field and update the MAIN list.
+  function sort_list_by_date(data, field, callback) {
+    if (data.length > 1) {
+        data.sort(function(a, b) {
+        var date1 = Date.parse(a[field]);
+        var date2 = Date.parse(b[field]);
+        return date2 - date1;
+    });
+    }
+    callback(data);
+  }
+
+  //Reset the MAIN posts list.
+  function set_MAIN_list(list) {
+    MAIN.set('posts_list', list);
+    var number = MAIN.get('number_of_posts');
+    number += 1;
+    MAIN.set('number_of_posts', number);
+  }
+
+  //Creates an empty post with a new UUID.
+  function create_draft_post_object() {
+    return {
+        active_draft_content: "",
+        active_draft_title: "",
+        post_author: parseInt("{{=auth.user_id}}"),
+        post_content: "",
+        post_title: "",
+        board_id: "{{=board_id}}",
+        post_id: generateUUID(),
+        posting_time: get_UTC_String(),
+        posting_time_pretty: get_pretty_time(),
+        is_draft: true
+    };
+  }
+
+  //Updates the time and draft status before becoming a real post and being sent to the server.
+  function prepare_saved_post_object(post) {
+    post['is_draft'] = false;
+    post['posting_time'] = get_UTC_String();
+    post['posting_time_pretty'] = get_pretty_time();
+    post['active_draft_title'] = "";
+    post['active_draft_content'] = "";
+    return post;
+  }
+
+  //http://stackoverflow.com/questions/7176908/how-to-get-index-of-object-by-its-property-in-javascript
+  function findWithAttr(array, attr, value) {
+    for(var i = 0; i < array.length; i += 1) {
+        if(array[i][attr] === value) {
+            return i;
+        }
+    }
+  }
+
+  //To retrieve the time in UTC string format
+  function get_UTC_String() {
+      var date = new Date();
+      return date.toUTCString();
+  }
+
+  //Makes the date more readable and in user's time zone.
+  function get_pretty_time() {
+    var date = new Date();
+    var full_date = date.toString();
+    var split_date = full_date.split(" ");
+    var split_time = split_date[4].split(":");
+    return split_date[1] + " " + split_date[2] + " " + split_time[0] + ":" + split_time[1];
+  }
+
+  //Save the active draft to the real title and content.
+  function copy_active(post) {
+    post['post_title'] = post['active_draft_title'];
+    post['post_content'] = post['active_draft_content'];
+    return post;
+  }
+
+  function copy_saved(post) {
+    post['active_draft_title'] = post['post_title'];
+    post['active_draft_content'] = post['post_content'];
+    return post;
+  }
+
+  //Moves the cursor to the specified element in a specific post.
+  function set_focus(post_id, element_id) {
+    MAIN.set('latest_post_id', post_id);
+    document.getElementById(element_id).focus();
+  }
+
+  //Create a new draft post when the New Post button is clicked.
+  MAIN.on("new-post", function(e) {
+    var posts_list = MAIN.get('posts_list');
+    //Add a new post to the posts_list with a unique UUID. Not sending this to the server yet.
+    var new_draft_post = create_draft_post_object();
+    posts_list.unshift(new_draft_post);
+    if (posts_list.length > 1) {
+        sort_list_by_date(posts_list, 'posting_time', set_MAIN_list);
+    } else {
+        set_MAIN_list(posts_list);
+    }
+    //Set the focus to the newly created post.
+    set_focus(new_draft_post['post_id'], "focus_input");
+  });
+
+  //Save the post to the server when the Save Post button is clicked.
+  MAIN.on("save-post", function(e) {
+    var posts_list = MAIN.get('posts_list');
+    //Get the ID from the click.
+    var save_button = $(e.original.target);
+    var clicked_id = save_button.data('postid');
+    //Retrieve the specific post from the list.
+    var post_list_index = findWithAttr(posts_list, 'post_id', clicked_id);
+    var post = posts_list[post_list_index];
+    post = copy_active(post);
+    //If the post title isn't empty, then:
+    if ($.trim(post['post_title']).length > 0) {
+        //Set its fields for inclusion as a permanent post.
+        var prepared_post = prepare_saved_post_object(post);
+        //Put that altered post back into the local posts_list
+        posts_list[post_list_index] = prepared_post;
+        sort_list_by_date(posts_list, 'posting_time', set_MAIN_list);
+        //Then send it to the server.
+        send_record(prepared_post);
+    } else {
+        set_focus(clicked_id, "focus_input");
+    }
+  });
+
+  MAIN.on("edit-post", function(e) {
+    var posts_list = MAIN.get('posts_list');
+    //Get the ID from the click.
+    var save_button = $(e.original.target);
+    var clicked_id = save_button.data('postid');
+    //Retrieve the specific post from the list.
+    var post_list_index = findWithAttr(posts_list, 'post_id', clicked_id);
+    var post = posts_list[post_list_index];
+    //Repopulate the active draft field so the template can use it.
+    post = copy_saved(post);
+    //Set it back to draft status
+    post['is_draft'] = true;
+    //Put it back in the same spot in the list.
+    posts_list[post_list_index] = post;
+    sort_list_by_date(posts_list, 'posting_time', set_MAIN_list);
+    send_record(post);
+    set_focus(clicked_id, "focus_input");
+  });
+
+  MAIN.on("delete-post", function(e) {
+    var posts_list = MAIN.get('posts_list');
+    //Get the ID from the click.
+    var save_button = $(e.original.target);
+    var clicked_id = save_button.data('postid');
+    //Retrieve the specific post from the list.
+    var post_list_index = findWithAttr(posts_list, 'post_id', clicked_id);
+    var post = posts_list[post_list_index];
+    delete_record(post);
+    posts_list.splice(post_list_index, 1);
+  });
+
+  MAIN.on("loses-focus", function(e) {
+    //Ideally this would only send the draft in question. Implement Later.
+    periodic();
+  });
+
+  MAIN.on("gains-focus", function(e) {
+    //Ideally this would only send the draft in question. Implement Later.
+    periodic();
+  });
+
+  //Called every 10 seconds
+  function periodic() {
+    //Send
+    var posts_list = MAIN.get('posts_list');
+    //Find the drafts and check if they've had any updates.
+    for (var i = 0; i < posts_list.length; i += 1) {
+        if(posts_list[i]['is_draft'] === true) {
+            var post = posts_list[i];
+            //If the two fields differ
+            if (post['post_title'] !== post['active_draft_title'] || post['post_content'] !== post['active_draft_content']) {
+                //If they differ such that there is no text now but there was before
+                if (($.trim(post['post_title']).length > 0 && $.trim(post['active_draft_title']).length === 0) && ($.trim(post['active_draft_content']).length === 0)) {
+                    //Then we know that this is a draft that was on the server and we should now delete it from the server but not from the local list.
+                    post = copy_active(post);
+                    sort_list_by_date(posts_list, 'posting_time', set_MAIN_list);
+                    delete_record(post);
+                } else {
+                    post = copy_active(post);
+                    sort_list_by_date(posts_list, 'posting_time', set_MAIN_list);
+                    send_record(post);
+                }
+            }
+        }
+    }
+    //Receive
+    load_posts();
+  }
+
+  //Simply sends a complete post to the controller.
+  function send_record(post) {
+    $.ajax("{{=URL('default', 'add_post', user_signature=True)}}",
+            {
+              data: {
+                post_title: post['post_title'], //request.vars.post_title
+                post_content: post['post_content'], //request.vars.post_content
+                is_draft: post['is_draft'], //request.vars.is_draft
+                post_id: post['post_id'], //request.vars.post_id
+                active_draft_content: post['active_draft_content'], //request.vars.active_draft_content
+                active_draft_title: post['active_draft_title'], //request.vars.active_draft_title
+                posting_time: post['posting_time'], //request.vars.posting_time
+                posting_time_pretty: post['posting_time_pretty'], //request.vars.posting_time_pretty
+                board_id: MAIN.get('board')['id']
+              },
+              method: 'POST',
+              success: function() {},
+              error: function() {}
+            }
+    );
+  }
+
+  //Deletes a record by post_id
+  function delete_record(post) {
+    $.ajax("{{=URL('default', 'del_post', user_signature=True)}}",
+            {
+              data: {
+                post_id: post['post_id'] // request.vars.post_id
+              },
+              method: 'POST',
+              success: function() {},
+              error: function() {}
+            }
+    );
+  }
+
+  // http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+  function generateUUID(){
+    var d = new Date().getTime();
+    if(window.performance && typeof window.performance.now === "function"){
+        d += performance.now(); //use high-precision timer if available
+    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+    });
+  }
+
+  setInterval(periodic, 5000);
+
+});
+</script>

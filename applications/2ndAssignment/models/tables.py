@@ -18,20 +18,28 @@
 from datetime import datetime
 
 db.define_table('boards',
-    Field('board_name', 'string', label='Name', length=25),
-    Field('board_description', 'string', label='Description', length=130),
+    Field('board_name', 'string', label='Name', length=25, default=""),
+    Field('active_draft_name', 'string', label='Name', length=25, default=""),
+    Field('board_description', 'string', label='Description', length=130, default=""),
+    Field('active_draft_description', 'string', label='Description', length=130, default=""),
     Field('board_author', db.auth_user, default=auth.user_id),
-    Field('board_last_updated', 'datetime', default=datetime.utcnow()),
-    Field('board_pretty_updated', 'string', default=str(datetime.utcnow()))
+    Field('board_last_updated', 'string'),
+    Field('board_pretty_updated', 'string'),
+    Field('board_id'),
+    Field('is_draft', 'boolean', default=False)
     )
 
 db.define_table('posts',
     Field('post_author', db.auth_user, default=auth.user_id),
     Field('post_title', 'string', label='Title', length=40),
+    Field('active_draft_title', 'string', label='Title', length=40, default=""),
     Field('post_content', 'text', label='Content'),
-    Field('posting_time', 'datetime', default=datetime.utcnow()),
-    Field('posting_time_pretty', 'string', default=str(datetime.utcnow())),
-    Field('board_id', "reference boards")
+    Field('active_draft_content', 'string', label='Content', default=""),
+    Field('posting_time', 'string'),
+    Field('posting_time_pretty', 'string'),
+    Field('board_id', "reference boards"),
+    Field('post_id'),
+    Field('is_draft', 'boolean', default=False)
     )
 
 db.posts.board_id.on_delete = "SET NULL"
