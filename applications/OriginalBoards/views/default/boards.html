@@ -1,0 +1,40 @@
+{{extend 'layout.html'}}
+
+<div id="boards_page">
+    <div class="top_bar">
+        {{if auth.is_logged_in():}}
+            {{=A('Create Board', _class='btn', _id='create_board', _href=URL('default', 'create_board'))}}
+        {{else:}}
+            {{=A('Create Board', _class='btn', _id='create_board_hidden', _href=URL('default', 'create_board'))}}
+        {{pass}}
+        <h1 id="main_page_h1">SlugBoard</h1>
+        <div class="signup_signin">
+            {{if not auth.is_logged_in():}}
+                {{=A('Log In', _class='btn', _id='signin_button', _href=URL('default', 'user', args=['login'], vars=dict(_next=URL(args=request.args, vars=request.vars))))}}
+                {{=A('Sign Up', _class='btn', _id='signup_button', _href=URL('default', 'user', args=['register'], vars=dict(_next=URL(args=request.args, vars=request.vars))))}}
+            {{pass}}
+        </div>
+    </div>
+    {{if len(boards) > 0:}}
+    <div id="boards_list">
+        {{for board in boards:}}
+        <div class="single_board">
+            <div class="bp_name_and_updated">
+                <h3>{{=A(board['board_name'], _href=URL('default', 'board', args=[board['id']]))}}</h3>
+                <span class="bp_last_updated">Last Updated: {{=board['board_pretty_updated']}}</span>
+            </div>
+            <div class="bp_board_counts">
+                <div class="bp_new_today">
+                    <h4>New</h4>
+                    <span class="bp_new_today_count">{{=board['new_today']}}</span>
+                </div>
+                <div class="bp_total">
+                    <h4>Total</h4>
+                    <span class="bp_total_count">{{=board['total_count']}}</span>
+                </div>
+            </div>
+        </div>
+        {{pass}}
+    </div>
+    {{pass}}
+</div>

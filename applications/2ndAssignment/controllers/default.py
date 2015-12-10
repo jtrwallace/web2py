@@ -25,6 +25,19 @@ def load_boards():
         board['new_today'] = len(db((db.posts.board_id == board.id) & (db.posts.posting_time >= (datetime.utcnow() - timedelta(days=1)))).select())
     return response.json(list(all_boards))
 
+def search_boards():
+    search_input = request.vars.search_input
+    string_length = len(search_input)
+    not_draft_boards_query = (db.boards.is_draft == False)
+    my_drafts_boards_query = (db.boards.board_author == auth.user_id) & (db.boards.is_draft == True)
+    not_drafts = db(not_draft_boards_query)
+    my_drafts = db(my_drafts_boards_query)
+    all_boards = not_drafts.select() & my_drafts.select()
+    matched_boards = []
+    for board in all_boards:
+        first_chars = board['title']
+    return response.json(list(all_boards))
+
 def board():
     board_id = request.args(0)
     return locals()
